@@ -4,7 +4,7 @@ class MyFooter extends HTMLElement {
 
         this.innerHTML =  /*html*/`
             <footer class='page-footer blue lighten-1'>
-                <div style="background: linear-gradient(to bottom, #1a237e, #64b5f6)">
+                <div "style="background: linear-gradient(to bottom, #1a237e, #64b5f6)>
                     <div class='row'>
                         <div class='col l6 s12'>
                             <h5 class='white-text'>MyPinterest</h5>

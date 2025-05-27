@@ -1,1 +1,1 @@
-export const URI='https://backend-ilaq.onrender.com';
+export const URI= 'https://backend-ilaq.onrender.com';

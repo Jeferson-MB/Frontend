@@ -4,7 +4,7 @@ class ImageUploader extends HTMLElement {
 
         this.innerHTML = /*html*/`
         <div class="fixed-action-btn">
-            <a id="fab-upload" class="btn-floating btn-large red">
+            <a id="fab-upload" class="btn-floating btn-large style="linear-gradient(to bottom, #1a237e, #64b5f6)">
                 <i class="material-icons">add_a_photo</i>
             </a>
         </div>

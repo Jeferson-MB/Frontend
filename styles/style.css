@@ -5,8 +5,8 @@
 }
 
 .card {
-    padding: 20px; /* Margenes internos */
-    border-radius: 60px; /* Bordes redondos */
+    padding: 15px; /* Margenes internos */
+    border-radius: 50px; /* Bordes redondos */
 }
 
 .input-field input {
