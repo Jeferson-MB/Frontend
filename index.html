@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="materialize/css/materialize.min.css">
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body class="grey lighten-4">
+    <!-- Navbar -->
+    <my-navbar></my-navbar>
+
+    <!-- Boton flotante para cargar archivo -->
+    <image-uploader></image-uploader>
+
+    <!-- Muestra de informacion -->
+    <div class="container">
+        <div class="section">
+            <!-- Saludo de usuario -->
+            <user-greeting></user-greeting>
+
+            <!-- Loader de cada una de las imágenes -->
+            <spinner-loader></spinner-loader>
+
+            <!-- Galería de imágenes -->
+            <image-gallery></image-gallery>
+        </div>
+    </div>
+
+    <my-footer></my-footer>
+
+    <script type="module" src="components/navbar.js"></script>
+    <script type="module" src="components/image-uploader.js"></script>
+    <script type="module" src="components/user-greeting.js"></script>
+    <script type="module" src="components/spinner-loader.js"></script>
+    <script type="module" src="components/image-galley.js"></script>
+    <script type="module" src="components/footer.js"></script>
+
+    <script src="materialize/js/materialize.min.js"></script>
+    <script type="module" src="javascript/home/main.js"></script>
+    <script src="javascript/auth/logout.js"></script>
+</body>
+</html>

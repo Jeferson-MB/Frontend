@@ -1,0 +1,64 @@
+.center-row {
+    display: flex;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    padding: 20px; /* Margenes internos */
+    border-radius: 12px; /* Bordes redondos */
+}
+
+.input-field input {
+    color: #808080;
+}
+
+.input-field label {
+    color: #898989;
+}
+
+.btn {
+    width: 100%;
+    background-color: #64788d;
+}
+
+.btn:hover {
+    background-color: #64788d;
+}
+
+#login-loader {
+    position: fixed;
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none; /* Ver: block, No ver: None */
+    text-align: center;
+    z-index: 1000;
+}
+
+#login-loader .preloader-wrapper {
+    margin: 0 auto;
+}
+
+#gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+#gallery .col{
+    display: flex;
+    flex-direction: column;
+    flex:0 1 calc(33.33% - 1rem);
+    box-sizing: border-box;
+}
+
+#gallery .card{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 200px;
+}
+
