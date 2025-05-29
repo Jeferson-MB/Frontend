@@ -1,4 +1,5 @@
-import {URI} from "../uri.js"
+import { URI } from "../uri.js";
+
 document.addEventListener("DOMContentLoaded", () => {
 
     let btnLogin = document.getElementById("btnLogin");
@@ -11,44 +12,42 @@ document.addEventListener("DOMContentLoaded", () => {
         
         loader.style.display = 'block'; // Muestra el loader
 
-        setTimeout(() => {
-            // Unión entre python y javascript
-            fetch(`${URI}/api/login`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    username: varUsername,
-                    password: varPassword
-                })
+                   // Unión entre python y javascript
+        fetch(`${URI}/api/login`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                username: varUsername,
+                password: varPassword
             })
-            .then(res => res.json())
-            .then(data => {
-                loader.style.display = 'none'; // Oculta el loader
+        })
+        .then(res => res.json())
+        .then(data => {
+            loader.style.display = 'none'; // Oculta el loader
 
-                console.log(data);
-                if (data.user_id) {
-                    // Guarda como clave y valor en el localstorage
-                    localStorage.setItem('user_id', data.user_id);
-                    M.toast({
-                        html: data.mensaje,
-                        classes: 'green'
-                    });
-                    location.href = 'index.html';
-                } else {
-                    M.toast({
-                        html: data.error,
-                        classes: 'red'
-                    });
-                }
-            })
-            .catch(err => {
-                loader.style.display = 'none'; // Oculta el loader
-
+            console.log(data);
+            if (data.user_id) {
+                // Guarda como clave y valor en el localstorage
+                localStorage.setItem('user_id', data.user_id);
                 M.toast({
-                    html: "Error de conexión",
+                    html: data.mensaje,
+                    classes: 'green'
+                });
+                location.href = 'index.html';
+            } else {
+                M.toast({
+                    html: data.error,
                     classes: 'red'
                 });
+            }
+        })
+        .catch(err => {
+            loader.style.display = 'none'; // Oculta el loader
+
+            M.toast({
+                html: "Error de conexión",
+                classes: 'red'
             });
-        }, 2000);
+        });
     });
 });

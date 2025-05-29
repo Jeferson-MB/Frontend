@@ -1,5 +1,5 @@
 // importamos modulos externos de javascript
-import {URI} from "../uri.js";
+import { URI } from "../uri.js";
 import { fetchComments, fetchImages } from "./services/api.js";
 
 export async function loadGallery(users, onlyMine = false) {

@@ -20,7 +20,7 @@ export async function uploadImage(file, userId) {
     formData.append('image', file);
     formData.append('user_id', userId);
 
-    const res = await fetch(`${URL}/upload`, {
+    const res = await fetch('http://localhost:5000/api/upload', {
         method: 'POST',
         body: formData
     });
@@ -29,7 +29,7 @@ export async function uploadImage(file, userId) {
 }
 
 export async function fetchComments(imageId, userId, text) {
-    const res = await fetch(`${URL}/comment/${imageId}`, {
+    const res = await fetch(`http://localhost:5000/api/comment/${imageId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

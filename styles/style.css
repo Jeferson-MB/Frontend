@@ -5,7 +5,7 @@
 }
 
 .card {
-    padding: 15px; /* Margenes internos */
+    padding: 20px; /* Margenes internos */
     border-radius: 50px; /* Bordes redondos */
 }
 
@@ -30,7 +30,7 @@
     position: fixed;
     top: 75%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -60%);
     display: none; /* Ver: block, No ver: None */
     text-align: center;
     z-index: 1000;
@@ -61,3 +61,4 @@
     flex-grow: 1;
     min-height: 200px;
 }
+

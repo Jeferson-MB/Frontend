@@ -4,7 +4,7 @@ class UserGreeting extends HTMLElement {
 
         this.innerHTML = /*html*/`
             <!-- Muestra el nombre del usuario -->
-            <h5 id="user-greeting" class="Black-text text-darken-3"></h5>
+            <h5 id="user-greeting" class="black-text text-darken-2"></h5>
         `
     }
 }
