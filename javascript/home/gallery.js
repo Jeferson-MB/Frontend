@@ -50,7 +50,7 @@ export async function loadGallery(users, onlyMine = false) {
                             like-btn data-imageid='${img.id}'>
                             <i class='material-icons'>favorite_border</i>
                         </a>
-                    <span class='card-title'>Subido por: <strong>${uploaderName}</strong></span>
+                    <span class='card-title'>Subido por: <a class="profile-link" href="profile.html?user_id=${uploader.id}"><strong>${uploaderName}</strong></a></span>
                     ${commentsHtml || '<p>Sin comentarios aun</p>'}
                     
                     <div class='comment-section row'>
@@ -95,6 +95,43 @@ export async function loadGallery(users, onlyMine = false) {
             }
         })
     })
+
+
+function renderGallery(images, users) {
+    const container = document.getElementById('gallery-container');
+    container.innerHTML = '';
+
+    images.forEach(image => {
+        // Busca el usuario que subió la imagen por su user_id
+        const uploader = users.find(u => u.id === image.user_id);
+        const uploaderName = uploader ? uploader.username : "Desconocido";
+        const uploaderId = uploader ? uploader.id : null;
+
+        // Construye el bloque HTML de la tarjeta
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        // HTML para el uploader con enlace al perfil si existe
+        const uploaderHTML = uploaderId
+            ? `<a class="profile-link" href="profile.html?user_id=${uploaderId}"><strong>${uploaderName}</strong></a>`
+            : `<strong>${uploaderName}</strong>`;
+
+        card.innerHTML = `
+            <div class="card-image">
+                <img src="data:image/png;base64,${image.filedata}" alt="${image.filename}">
+            </div>
+            <div class="card-content">
+                <span class='card-title'>
+                    Subido por: ${uploaderHTML}
+                </span>
+                <!-- Otros datos de la imagen aquí -->
+            </div>
+            <!-- Aquí puedes agregar más secciones de la tarjeta como comentarios, likes, etc. -->
+        `;
+
+        container.appendChild(card);
+    });
+}
 
     loader.style.display = 'none';
 }
