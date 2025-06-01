@@ -91,6 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
             loader.style.display = 'block'; // Muestra el loader
 
             try {
+                console.log(`Enviando registro a: ${URI}/api/register`);
+                
                 const response = await fetch(`${URI}/api/register`, {
                     method: 'POST',
                     headers: {
@@ -104,7 +106,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     })
                 });
 
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
+                console.log('Response data:', data);
+                
                 loader.style.display = 'none'; // Oculta el loader
 
                 if (data.success) {
@@ -126,8 +136,16 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (error) {
                 loader.style.display = 'none'; // Oculta el loader
                 console.error('Error:', error);
+                
+                let errorMessage = 'Error de conexión';
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorMessage = 'No se puede conectar al servidor. Verifica que el backend esté ejecutándose.';
+                } else if (error.message.includes('HTTP error')) {
+                    errorMessage = `Error del servidor: ${error.message}`;
+                }
+                
                 M.toast({
-                    html: "Error de conexión. Inténtalo de nuevo.",
+                    html: errorMessage,
                     classes: 'red'
                 });
             }
