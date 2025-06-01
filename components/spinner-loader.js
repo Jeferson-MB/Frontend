@@ -3,7 +3,7 @@ class SpinnerLoader extends HTMLElement {
         super();
 
         this.innerHTML = /*html*/`
-        <div id="loader" class="center-align" style="margin-top: 50px; display: none;">
+        <div id="loader" class="center-align" style="margin-top: 30px; display: none;">
             <div class="preloader-wrapper active">
                 <div class="spinner-layer spinner-blue-only">
                     <div class="circle-clipper left">

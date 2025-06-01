@@ -2,7 +2,7 @@ class RegisterForm extends HTMLElement {
     constructor() {
         super();
         this.innerHTML = /*html*/`
-        <div class="row center-row">
+        <div class="row center-row" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(to bottom, #1a237e, #64b5f6);">
             <div class="col s12 m8 l6 offset-m2 offset-l3">
                 <div class="card white z-depth-4">
                     <h5 class="center-align grey-text text-darken-5">Registro de Usuario</h5>

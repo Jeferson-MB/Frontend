@@ -3,7 +3,7 @@ class Navbar extends HTMLElement {
         super();
 
         this.innerHTML = /*html*/`
-        <nav style="background-color: #F5F5DC;">
+        <nav style="background: linear-gradient(to bottom, #1a237e, #64b5f6)>
             <div class="nav-wrapper container">
                 <a href="#" class="grey-text text-lighten-15 brand-logo">MyPinterest</a>
                 <ul class="right">
