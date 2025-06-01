@@ -4,17 +4,17 @@ class MyFooter extends HTMLElement {
 
         this.innerHTML =  /*html*/`
             <footer class='page-footer style="background: linear-gradient(to bottom, #1a237e, #64b5f6)>
-                <div class='container'>
-                    <div class='row'>
-                        <div class='col l6 s12'>
-                            <h5 class='white-text'>MyPinterest</h5>
-                            <p class='grey-text text-lighten-4'>Hecho con Flask y Materialize</p>
+                <div class="container">
+                    <div class="row">
+                        <div class="col l6 s12">
+                            <h5 class="white-text">MyPinterest</h5>
+                            <p class="grey-text text-lighten-4">Hecho con Flask y Materialize</p>
                         </div>
-                        <div class='col l4 offset-l2 s12'>
-                            <h5 class='white-text'>Enlaces</h5>
+                        <div class="col l4 offset-l2 s12">
+                            <h5 class="white-text">Enlaces</h5>
                             <ul>
                                 <li>
-                                    <a class='grey-text text-lighten-3' href='index.html'>
+                                    <a class="grey-text text-lighten-3" href="index.html">
                                         Galería
                                     </a>
                                 </li>
@@ -23,8 +23,8 @@ class MyFooter extends HTMLElement {
                     </div>
                 </div>
 
-                <div class='footer-copyright'>
-                    <div class='container'>
+                <div class="footer-copyright">
+                    <div class="container">
                         @ 2025 JefersonAMB
                     </div>
                 </div>
