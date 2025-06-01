@@ -1,0 +1,163 @@
+.center-row {
+    display: flex;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    padding: 20px; /* Margenes internos */
+    border-radius: 12px; /* Bordes redondos */
+}
+
+.input-field input {
+    color: #808080;
+}
+
+.input-field label {
+    color: #898989;
+}
+
+.btn {
+    width: 100%;
+    background-color: #64788d;
+}
+
+.btn:hover {
+    background-color: #64788d;
+}
+
+#login-loader {
+    position: fixed;
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none; /* Ver: block, No ver: None */
+    text-align: center;
+    z-index: 1000;
+}
+
+#login-loader .preloader-wrapper {
+    margin: 0 auto;
+}
+
+#gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+#gallery .col{
+    display: flex;
+    flex-direction: column;
+    flex:0 1 calc(33.33% - 1rem);
+    box-sizing: border-box;
+}
+
+#gallery .card{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 200px;
+}
+
+
+/* Estilos para el formulario de registro */
+.file-field .btn {
+    background-color: #64788d;
+}
+
+.file-field .btn:hover {
+    background-color: #5a6b7d;
+}
+
+/* Preview de imagen de perfil */
+#photo-preview {
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#photo-preview:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* Enlaces en los formularios */
+.card-content a {
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.card-content a:hover {
+    text-decoration: underline;
+}
+
+/* Espaciado para botones */
+.card-content .btn {
+    margin-top: 10px;
+}
+
+/* Mensajes de validación */
+.input-field.error input {
+    border-bottom: 1px solid #f44336 !important;
+    box-shadow: 0 1px 0 0 #f44336 !important;
+}
+
+.input-field.error label {
+    color: #f44336 !important;
+}
+
+/* Loader específico para registro */
+#register-loader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    text-align: center;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Responsividad para dispositivos móviles */
+@media only screen and (max-width: 600px) {
+    .center-row .col {
+        margin-top: 20px;
+    }
+    
+    .card {
+        margin: 10px;
+    }
+    
+    #photo-preview {
+        max-width: 120px;
+        max-height: 120px;
+    }
+}
+
+/* Estilos para fotos de perfil en la galería */
+.user-profile-photo {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* Mejorar la apariencia de las cards de imágenes */
+.card-content .card-title {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+.uploader-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
