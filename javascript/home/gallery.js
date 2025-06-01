@@ -46,7 +46,7 @@ export async function loadGallery(users, onlyMine = false) {
                 </div>
                 <div class='card-content'>
                     <div class='like-section'>
-                        <a class='btn-floating halfway-fab waves-effect waves-light grey 
+                        <a class='btn-floating halfway-fab waves-effect waves-light blue 
                             like-btn data-imageid='${img.id}'>
                             <i class='material-icons'>favorite_border</i>
                         </a>

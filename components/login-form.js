@@ -19,8 +19,7 @@ class LoginForm extends HTMLElement {
                             <button id="btnLogin" class="btn waves-effect waves-light">Entrar</button>
 
                             <div class="center-align" style="margin-top: 15px;">
-                                <p>¿No tienes cuenta? <a href="register.html" class="grey-text">Regístrate aquí</a></p>
-                            </div>
+                            <p>¿No tienes cuenta? <a href="register.html" class="blue-text">Regístrate aquí</a></p>
                         </div>
                     </div>
                 </div>
