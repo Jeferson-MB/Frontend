@@ -1,5 +1,5 @@
 function loadGallery(users, onlyMine = false) {
-    const userId = parseInt(localStorage.getItem("user_id"));
+    const myUserId = Number(localStorage.getItem("user_id"));
     const container = document.getElementById("gallery");
 
     container.innerHTML = '';
@@ -10,18 +10,25 @@ function loadGallery(users, onlyMine = false) {
     .then(images => {
         images.forEach(img => {
             // Pregunta si el usuario que subió la foto es el mismo que está logueado
-            const isMine = parseInt(img.user_id) === userId;
+            const isMine = Number(img.user_id) === myUserId;
 
             // Es para saber si la persona logueada es la misma de las fotos o no
             if (onlyMine && !isMine) return;
             if (!onlyMine && isMine) return;
 
             // Encontramos a la persona que cargó la imagen
-            const uploader = users.find(u => u.id == img.user_id);
-            const uploaderName = uploader ? (uploader.id === userId ? 'Tú' : uploader.username) 
-            : 'Desconocido';
+            const uploader = users.find(u => u.id === Number(img.user_id));
+            let uploaderHTML = '';
+            if (uploader) {
+                if (uploader.id === myUserId) {
+                    uploaderHTML = '<strong>Tú</strong>';
+                } else {
+                    uploaderHTML = `<a class="profile-link" href="profile.html?user_id=${uploader.id}"><strong>${uploader.username}</strong></a>`;
+                }
+            } else {
+                uploaderHTML = '<strong>Desconocido</strong>';
+            }
 
-            // <div class='col s12 m6 l4'></div>
             const card = document.createElement('div');
             card.className = 'col s12 m6 l4';
             card.innerHTML = `
@@ -30,7 +37,7 @@ function loadGallery(users, onlyMine = false) {
                         <img class='materialboxed' src='http://localhost:5000/static/uploads/${img.filename}' />
                     </div>
                     <div class='card-content'>
-                        <span class='card-title'>Subido por: <strong>${uploaderName}</strong></span>
+                        <span class='card-title'>Subido por: ${uploaderHTML}</span>
                     </div>
                 </div>
             `;
@@ -41,8 +48,8 @@ function loadGallery(users, onlyMine = false) {
 }
 
 function loadData(onlyMine = false) {
-    const userId = parseInt(localStorage.getItem("user_id"));
-    if (!userId)
+    const myUserId = Number(localStorage.getItem("user_id"));
+    if (!myUserId)
         window.location.href = './login.html';
     
     fetch('http://127.0.0.1:5000/api/users')
@@ -56,7 +63,7 @@ function loadData(onlyMine = false) {
         // Si el usuario es el que se logeó entonces que nos de nuestro nombre 
         if (onlyMine) {
             // De todos los usuarios encontramos al que sea el propio
-            const user = users.find(u => u.id === userId);
+            const user = users.find(u => u.id === myUserId);
             if (user && greeting) {
                 greeting.textContent = `Fotos de ${user.username}`;
             }
@@ -77,7 +84,9 @@ function updateNavbarActive(id) {
         li.classList.remove('active');
     });
     const selectedLi = document.getElementById(id);
-    selectedLi.classList.add('active');
+    if(selectedLi) {
+        selectedLi.classList.add('active');
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -86,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let viewMyGallery = true;
 
     fabUpload.addEventListener("click", () => {
-        imageInput.click(); // Cambiar al evento change: Línea 92
+        imageInput.click();
     });
 
     imageInput.addEventListener("change", () => {
@@ -100,13 +109,16 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append('image', file);
         formData.append('user_id', userId);
 
-        fetch('http://localhost:5000/api/upload', {
+        fetch('http://localhost:5000/api/images', {
             method: 'POST',
             body: formData
         })
         .then(res => res.json())
-        .then(data => console.log(data));
-    })
+        .then(data => {
+            console.log('Imagen subida:', data);
+            loadData(viewMyGallery);
+        });
+    });
 
     // Para ver la galería de los demás
     document.getElementById("btn-general").addEventListener("click", () => {
@@ -119,8 +131,8 @@ document.addEventListener("DOMContentLoaded", () => {
         viewMyGallery = true;
         loadData(viewMyGallery);
         updateNavbarActive('li-misfotos');
-    })
-    
-    loadData(true);
-    updateNavbarActive('li-misfotos');
+    });
+
+    loadData(false);
+    updateNavbarActive('li-general');
 });
