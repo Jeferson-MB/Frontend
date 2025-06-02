@@ -33,42 +33,43 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            let data;
+            try {
+                data = await response.json();
+            } catch (jsonError) {
+                data = {};
             }
 
-            const data = await response.json();
-            console.log('Response data:', data);
-            
             loader.style.display = 'none';
 
-            if (data.user_id) {
-                localStorage.setItem('user_id', data.user_id);
-                M.toast({
-                    html: data.mensaje,
-                    classes: 'green'
-                });
-                location.href = 'index.html';
+            if (response.ok) {
+                if (data.user_id) {
+                    localStorage.setItem('user_id', data.user_id);
+                    M.toast({
+                        html: data.mensaje,
+                        classes: 'green'
+                    });
+                    location.href = 'index.html';
+                } else {
+                    M.toast({
+                        html: data.error || 'Error desconocido',
+                        classes: 'red'
+                    });
+                }
             } else {
+                // Mostrar mensaje de error personalizado si viene del backend
                 M.toast({
-                    html: data.error || 'Error desconocido',
+                    html: data.error || `Error del servidor: ${response.status}`,
                     classes: 'red'
                 });
             }
         } catch (error) {
             loader.style.display = 'none';
             console.error('Error details:', error);
-            
             let errorMessage = 'Error de conexión';
             if (error.name === 'TypeError' && error.message.includes('fetch')) {
                 errorMessage = 'No se puede conectar al servidor. Verifica que el backend esté ejecutándose.';
-            } else if (error.message.includes('HTTP error')) {
-                errorMessage = `Error del servidor: ${error.message}`;
             }
-            
             M.toast({
                 html: errorMessage,
                 classes: 'red'
