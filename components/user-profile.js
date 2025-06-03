@@ -12,66 +12,70 @@ class UserProfile extends HTMLElement {
     }
 
     connectedCallback() {
-        const user_id = localStorage.getItem("user_id");
-        const usernameEl = this.querySelector('#profile-username');
-        const photoEl = this.querySelector('#profile-photo');
-        const myPhotosDiv = this.querySelector('#my-photos');
+        const urlParams = new URLSearchParams(window.location.search);
+        const param_user_id = urlParams.get("user_id");
+        const local_user_id = localStorage.getItem("user_id");
+        const user_id = param_user_id || local_user_id;
+
+        const usernameElem = this.querySelector('#profile-username');
+        const photoElem = this.querySelector('#profile-photo');
 
         if (!user_id) {
-            usernameEl.textContent = "No logueado";
-            photoEl.src = "https://ui-avatars.com/api/?name=Usuario";
+            usernameElem.textContent = "No logueado";
+            photoElem.src = "https://ui-avatars.com/api/?name=Usuario";
             return;
         }
 
-        // Cargar datos de perfil
+        // Obtener datos del perfil
         fetch(`http://localhost:5000/api/profile/${user_id}`)
             .then(res => res.json())
             .then(data => {
-                usernameEl.textContent = data.username;
-                photoEl.src = data.photo
+                usernameElem.textContent = data.username;
+                photoElem.src = data.photo
                     ? `data:image/png;base64,${data.photo}`
-                    : "https://ui-avatars.com/api/?name=" + encodeURIComponent(data.username);
+                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(data.username)}`;
             })
             .catch(() => {
-                usernameEl.textContent = "Error de perfil";
-                photoEl.src = "https://ui-avatars.com/api/?name=Usuario";
+                usernameElem.textContent = "Error de perfil";
+                photoElem.src = "https://ui-avatars.com/api/?name=Usuario";
             });
 
-        // Cargar fotos del usuario
+        // Obtener imágenes del usuario
         fetch('http://localhost:5000/api/images')
             .then(res => res.json())
             .then(images => {
                 const myPhotos = images.filter(img => String(img.user_id) === String(user_id));
-                myPhotosDiv.innerHTML = "";
+                const myPhotosDiv = this.querySelector('#my-photos');
 
                 if (myPhotos.length === 0) {
-                    myPhotosDiv.innerHTML = "<p>No tienes fotos subidas aún.</p>";
+                    myPhotosDiv.innerHTML = "<p>No tiene fotos subidas aún.</p>";
                     return;
                 }
 
                 myPhotos.forEach(img => {
                     const col = document.createElement('div');
                     col.className = 'col s12 m6 l4';
+
+                    const imgSrc = img.image_data && img.mime_type
+                        ? `data:${img.mime_type};base64,${img.image_data}`
+                        : `http://localhost:5000/static/uploads/${img.filename}`;
+
                     col.innerHTML = `
                         <div class='card hoverable z-depth-3'>
                             <div class='card-image'>
-                                <img class='materialboxed' src='http://localhost:5000/static/uploads/${img.filename}' />
+                                <img class='materialboxed' src='${imgSrc}' />
                             </div>
                         </div>
                     `;
                     myPhotosDiv.appendChild(col);
                 });
 
-                // Inicializar Materialbox solo dentro del componente
                 if (window.M && M.Materialbox) {
-                    const images = this.querySelectorAll('.materialboxed');
-                    M.Materialbox.init(images);
+                    M.Materialbox.init(this.querySelectorAll('.materialboxed'));
                 }
-            })
-            .catch(() => {
-                myPhotosDiv.innerHTML = "<p>Error al cargar tus fotos.</p>";
             });
     }
 }
 
 customElements.define('user-profile', UserProfile);
+
