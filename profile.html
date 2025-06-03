@@ -9,6 +9,22 @@
     <my-navbar></my-navbar>
     <user-profile></user-profile>
     <my-footer></my-footer>
+
+    <!-- Componentes Web -->
     <script type="module" src="components/user-profile.js"></script>
+    <script type="module" src="components/navbar.js"></script>
+
+    <!-- Script para manejar clic en botón de perfil -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const btnPerfil = document.getElementById("btn-perfil");
+            if (btnPerfil) {
+                btnPerfil.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    window.location.href = "profile.html";
+                });
+            }
+        });
+    </script>
 </body>
 </html>
