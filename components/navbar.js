@@ -2,21 +2,19 @@ class Navbar extends HTMLElement {
     constructor() {
         super();
 
-        this.innerHTML = /*html*/`
+        this.innerHTML = `
         <nav style="background: linear-gradient(to bottom, #1a237e, #64b5f6)">
             <div class="nav-wrapper container">
-                <a href="#" class="navbar-title-gradient brand-logo">MyPinterest</a>
-                <ul class="right">
-                    <li id="li-general"><a id="btn-general" style="color: azul grisáceo oscuro-3;">Galería general</a></li>
-                    <li id="li-misfotos"><a id="btn-misfotos" style="color: azul grisáceo oscuro-3;">Mi galería</a></li>
-                    <li id="li-perfil"><a id="btn-perfil" style="color: azul grisáceo oscuro-3;">Perfil</a></li>
-                    <li id="li-logout">
-                        <a class="azul grisáceo oscuro-3-text" id="btn-logout">Cerrar Sesión</a>
-                    </li>
+                <a href="/" class="brand-logo" style="padding-left: 20px;">MyPinterest</a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="/gallery" style="color: #ECEFF1;">Galería general</a></li>
+                    <li><a href="/my-gallery" style="color: #ECEFF1;">Mi galería</a></li>
+                    <li><a href="/profile" style="color: #ECEFF1;">Perfil</a></li>
+                    <li><a href="/logout" style="color: #ECEFF1;">Cerrar Sesión</a></li>
                 </ul>
             </div>
         </nav>
-        `
+        `;
     }
 }
 
