@@ -29,24 +29,32 @@ class UserProfile extends HTMLElement {
                 } else {
                     this.querySelector('#profile-photo').src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(data.username);
                 }
+            }).catch(() => {
+                this.querySelector('#profile-username').textContent = "Error de perfil";
+                this.querySelector('#profile-photo').src = "https://ui-avatars.com/api/?name=Usuario";
             });
 
-        // Cargar fotos del usuario
+        // Cargar imágenes propias
         fetch('http://localhost:5000/api/images')
             .then(res => res.json())
             .then(images => {
                 const myPhotos = images.filter(img => String(img.user_id) === String(user_id));
                 const myPhotosDiv = this.querySelector('#my-photos');
+
                 if (myPhotos.length === 0) {
                     myPhotosDiv.innerHTML = "<p>No tienes fotos subidas aún.</p>";
                 } else {
                     myPhotos.forEach(img => {
                         const col = document.createElement('div');
                         col.className = 'col s12 m6 l4';
+                        const imgSrc = img.image_base64
+                            ? `data:image/png;base64,${img.image_base64}`
+                            : `https://via.placeholder.com/150`;
+
                         col.innerHTML = `
                             <div class='card hoverable z-depth-3'>
                                 <div class='card-image'>
-                                    <img class='materialboxed' src='data:image/jpeg;base64,${img.data}' />
+                                    <img class='materialboxed' src='${imgSrc}' />
                                 </div>
                             </div>
                         `;
@@ -60,4 +68,6 @@ class UserProfile extends HTMLElement {
             });
     }
 }
+
 customElements.define('user-profile', UserProfile);
+

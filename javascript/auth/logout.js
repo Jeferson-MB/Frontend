@@ -1,7 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-    
-    document.getElementById("btn-logout").addEventListener("click", () => {
-        localStorage.removeItem("user_id");
-        window.location.href = '/frontend/login.html';
-    });
+    const logoutBtn = document.getElementById("btn-logout");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("user_id");
+            window.location.href = '/frontend/login.html';
+        });
+    }
 });
