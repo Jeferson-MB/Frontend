@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let varUsername = document.getElementById("username").value;
             let varPassword = document.getElementById("password").value;
             const loader = document.getElementById("login-loader");
-            
+
             if (loader) loader.style.display = 'block';
 
             setTimeout(() => {
@@ -28,11 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         M.toast({ html: data.error, classes: 'red' });
                     }
                 })
-                .catch(err => {
-                    if (loader) loader.style.display = 'none';
-                    M.toast({ html: "Error de conexión", classes: 'red' });
-                });
-            }, 2000);
+            }, 800);
         });
     }
 });
