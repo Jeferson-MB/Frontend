@@ -7,18 +7,20 @@ document.addEventListener("DOMContentLoaded", () => {
     let viewMyGallery = false;
 
     const userId = parseInt(localStorage.getItem('user_id'));
-    if (!userId)
+    if (!userId) {
+        M.toast({html: 'Debes iniciar sesión', classes: 'red'});
         return window.location.href = './login.html';
+    }
 
-    function loadData(onlyMine = false) {
-        fetchUsers()
-        .then(users => {
-            console.log(users);
+    async function loadData(onlyMine = false) {
+        try {
+            const users = await fetchUsers();
+            console.log('Usuarios cargados:', users);
             
             // Obtenemos el elemento html que vamos a rellenar
             const greeting = document.getElementById("user-greeting");
             // De todos los usuarios encontramos al que sea el propio
-            const user = users.find(u => u.id === userId);
+            const user = users.find(u => parseInt(u.id) === userId);
 
             // Si el usuario es el que se logeó entonces que nos de nuestro nombre 
             if (onlyMine && user && greeting) {
@@ -26,24 +28,54 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (greeting) {
                 greeting.textContent = `Galería General`;
             }
-            loadGallery(users, onlyMine);
-        });
-    };
+            
+            // Cargar galería con manejo de errores
+            await loadGallery(users, onlyMine);
+            
+        } catch (error) {
+            console.error('Error cargando datos:', error);
+            M.toast({html: 'Error cargando datos del servidor', classes: 'red'});
+        }
+    }
 
     // Para ver la galería de los demás
-    document.getElementById("btn-general").addEventListener("click", () => {
-        viewMyGallery = false;
-        loadData(viewMyGallery);
-        updateNavbarActive('li-general');
-    });
+    const btnGeneral = document.getElementById("btn-general");
+    if (btnGeneral) {
+        btnGeneral.addEventListener("click", () => {
+            viewMyGallery = false;
+            loadData(viewMyGallery);
+            updateNavbarActive('li-general');
+        });
+    }
 
-    document.getElementById("btn-misfotos").addEventListener("click", () => {
-        viewMyGallery = true;
-        loadData(viewMyGallery);
-        updateNavbarActive('li-misfotos');
-    });
+    const btnMisFotos = document.getElementById("btn-misfotos");
+    if (btnMisFotos) {
+        btnMisFotos.addEventListener("click", () => {
+            viewMyGallery = true;
+            loadData(viewMyGallery);
+            updateNavbarActive('li-misfotos');
+        });
+    }
 
-    initUploader();
+    // Botón de perfil
+    const btnPerfil = document.getElementById("btn-perfil");
+    if (btnPerfil) {
+        btnPerfil.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.location.href = "profile.html";
+        });
+    }
+
+    // Inicializar uploader con callback para recargar galería
+    initUploader(() => {
+        loadData(viewMyGallery);
+    });
+    
+    // Cargar datos iniciales
     loadData(false);
-    updateNavbarActive('li-general');
+    
+    // Verificar que el elemento existe antes de actualizar navbar
+    setTimeout(() => {
+        updateNavbarActive('li-general');
+    }, 100);
 });
