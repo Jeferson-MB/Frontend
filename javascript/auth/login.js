@@ -1,79 +1,39 @@
-import { URI } from "../uri.js";
+// javascript/login/login.js
 
-document.addEventListener("DOMContentLoaded", () => {
-    let btnLogin = document.getElementById("btnLogin");
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = document.getElementById('login-form');
 
-    btnLogin.addEventListener("click", async () => {
-        let varUsername = document.getElementById("username").value;
-        let varPassword = document.getElementById("password").value;
-        const loader = document.getElementById("login-loader");
-        
-        // Validación básica
-        if (!varUsername.trim() || !varPassword.trim()) {
-            M.toast({
-                html: "Por favor, completa todos los campos",
-                classes: 'red'
-            });
-            return;
-        }
-        
-        loader.style.display = 'block';
-        
-        console.log(`Intentando conectar a: ${URI}/api/login`);
-        
-        try {
-            const response = await fetch(`${URI}/api/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: varUsername,
-                    password: varPassword
-                })
-            });
+  if (loginForm) {
+    loginForm.addEventListener('submit', function (event) {
+      event.preventDefault();
 
-            let data;
-            try {
-                data = await response.json();
-            } catch (jsonError) {
-                data = {};
-            }
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
 
-            loader.style.display = 'none';
-
-            if (response.ok) {
-                if (data.user_id) {
-                    localStorage.setItem('user_id', data.user_id);
-                    M.toast({
-                        html: data.mensaje,
-                        classes: 'green'
-                    });
-                    location.href = 'index.html';
-                } else {
-                    M.toast({
-                        html: data.error || 'Error desconocido',
-                        classes: 'red'
-                    });
-                }
-            } else {
-                // Mostrar mensaje de error personalizado si viene del backend
-                M.toast({
-                    html: data.error || `Error del servidor: ${response.status}`,
-                    classes: 'red'
-                });
-            }
-        } catch (error) {
-            loader.style.display = 'none';
-            console.error('Error details:', error);
-            let errorMessage = 'Error de conexión';
-            if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                errorMessage = 'No se puede conectar al servidor. Verifica que el backend esté ejecutándose.';
-            }
-            M.toast({
-                html: errorMessage,
-                classes: 'red'
-            });
-        }
+      fetch('http://127.0.0.1:5000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Credenciales inválidas');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          localStorage.setItem('token', data.token);
+          window.location.href = '../home/home.html';
+        })
+        .catch((error) => {
+          console.error('Error en el inicio de sesión:', error);
+          alert('Error de inicio de sesión');
+        });
     });
+  } else {
+    console.error('Formulario login no encontrado');
+  }
 });
+
