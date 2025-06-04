@@ -1,9 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const logoutBtn = document.getElementById("btn-logout");
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
+    const btnLogout = document.getElementById("btn-logout");
+    if (btnLogout) {
+        btnLogout.addEventListener("click", () => {
             localStorage.removeItem("user_id");
             window.location.href = '/frontend/login.html';
         });
     }
 });
+

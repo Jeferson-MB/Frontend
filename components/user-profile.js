@@ -1,73 +1,42 @@
 class UserProfile extends HTMLElement {
-    constructor() {
-        super();
-        this.innerHTML = `
-            <div class="profile-card center-align">
-                <img id="profile-photo" class="profile-photo" src="" alt="Foto de perfil">
-                <h5 id="profile-username" class="profile-username"></h5>
-                <h6 style="color: #1976D2;">Mis fotos</h6>
-                <div id="my-photos" class="row"></div>
-            </div>
-        `;
-    }
-
     connectedCallback() {
-        const user_id = localStorage.getItem("user_id");
-        if (!user_id) {
-            this.querySelector('#profile-username').textContent = "No logueado";
-            this.querySelector('#profile-photo').src = "https://ui-avatars.com/api/?name=Usuario";
+        const userId = localStorage.getItem("user_id");
+        if (!userId) {
+            this.innerHTML = "<p>Usuario no autenticado</p>";
             return;
         }
 
-        // Cargar datos de perfil
-        fetch(`http://localhost:5000/api/profile/${user_id}`)
-            .then(res => res.json())
-            .then(data => {
-                this.querySelector('#profile-username').textContent = data.username;
-                if (data.photo) {
-                    this.querySelector('#profile-photo').src = `data:image/png;base64,${data.photo}`;
-                } else {
-                    this.querySelector('#profile-photo').src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(data.username);
-                }
-            }).catch(() => {
-                this.querySelector('#profile-username').textContent = "Error de perfil";
-                this.querySelector('#profile-photo').src = "https://ui-avatars.com/api/?name=Usuario";
-            });
+        Promise.all([
+            fetch(`http://127.0.0.1:5000/api/profile/${userId}`).then(res => res.json()),
+            fetch('http://127.0.0.1:5000/api/images').then(res => res.json())
+        ])
+        .then(([user, images]) => {
+            const userImages = images.filter(img => img.user_id == userId);
 
-        // Cargar imágenes propias
-        fetch('http://localhost:5000/api/images')
-            .then(res => res.json())
-            .then(images => {
-                const myPhotos = images.filter(img => String(img.user_id) === String(user_id));
-                const myPhotosDiv = this.querySelector('#my-photos');
-
-                if (myPhotos.length === 0) {
-                    myPhotosDiv.innerHTML = "<p>No tienes fotos subidas aún.</p>";
-                } else {
-                    myPhotos.forEach(img => {
-                        const col = document.createElement('div');
-                        col.className = 'col s12 m6 l4';
-                        const imgSrc = img.image_base64
-                            ? `data:image/png;base64,${img.image_base64}`
-                            : `https://via.placeholder.com/150`;
-
-                        col.innerHTML = `
-                            <div class='card hoverable z-depth-3'>
-                                <div class='card-image'>
-                                    <img class='materialboxed' src='${imgSrc}' />
-                                </div>
+            this.innerHTML = `
+                <div class="container white-text center-align">
+                    <h4>${user.nombre}</h4>
+                    <img src="${user.imagen}" alt="Foto de perfil" class="circle responsive-img" width="150">
+                    <h5>Galería</h5>
+                    <div class="row">
+                        ${userImages.map(img => `
+                            <div class="col s12 m4">
+                                <img src="${img.imagen_base64}" class="responsive-img z-depth-3">
+                                <p>${img.nombre}</p>
                             </div>
-                        `;
-                        myPhotosDiv.appendChild(col);
-                    });
-                }
-
-                if (window.M && M.Materialbox) {
-                    M.Materialbox.init(this.querySelectorAll('.materialboxed'));
-                }
-            });
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        })
+        .catch(err => {
+            this.innerHTML = "<p>Error al cargar el perfil</p>";
+            console.error(err);
+        });
     }
 }
 
 customElements.define('user-profile', UserProfile);
+
+
 
