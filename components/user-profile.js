@@ -2,17 +2,21 @@ class UserProfile extends HTMLElement {
     constructor() {
         super();
         this.innerHTML = `
-            <div class="center-align" style="margin-top:30px;margin-bottom:20px;">
-                <a href="index.html" class="btn-large waves-effect waves-light blue" style="border-radius:30px;">
-                    <i class="material-icons left">arrow_back</i>
-                    Volver a la galería
-                </a>
-            </div>
-            <div class="profile-card center-align">
-                <img id="profile-photo" class="profile-photo" src="" alt="Foto de perfil">
+            <!-- Barra de navegación principal -->
+            <nav class="blue">
+                <div class="nav-wrapper">
+                    <a href="index.html" class="brand-logo" style="margin-left:10px;">Galería</a>
+                    <ul id="nav-mobile" class="right hide-on-med-and-down">
+                        <li><a href="profile.html"><i class="material-icons left">person</i>Mi Perfil</a></li>
+                        <li><a href="index.html"><i class="material-icons left">photo_library</i>Galería</a></li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="profile-card center-align" style="max-width: 500px; margin: 40px auto;">
+                <img id="profile-photo" class="profile-photo" src="" alt="Foto de perfil" style="margin-top: 25px;">
                 <h5 id="profile-username" class="profile-username"></h5>
                 <div id="change-photo-section"></div>
-                <div id="my-photos" class="user-photos"></div>
+                <div id="my-photos" class="user-photos" style="margin-top: 30px;"></div>
             </div>
         `;
     }
@@ -33,7 +37,7 @@ class UserProfile extends HTMLElement {
         if (user_id === my_id) {
             this.querySelector('#change-photo-section').innerHTML = `
                 <div class="change-photo-container">
-                    <label for="new-profile-photo" class="btn-flat waves-effect waves-blue blue-text text-darken-2" style="cursor:pointer;">
+                    <label for="new-profile-photo" class="btn-flat waves-effect waves-blue black-text text-darken-2" style="cursor:pointer;">
                         <i class="material-icons left">photo_camera</i>Seleccionar nueva foto
                     </label>
                     <input type="file" id="new-profile-photo" accept="image/*" style="display:none;">
@@ -97,7 +101,7 @@ class UserProfile extends HTMLElement {
                             btnChange.style.display = 'none';
                             fileInput.value = '';
                             msg.textContent = '';
-                            msg.className = "blue-text";
+                            msg.className = "black-text";
                         }, 2000);
                     } else {
                         msg.textContent = result.error || "Error al actualizar foto";
