@@ -4,11 +4,22 @@
     <meta charset="UTF-8">
     <title>Perfil de Usuario</title>
     <link rel="stylesheet" href="styles/style.css">
+    <!-- Si usas Materialize o fuentes de iconos, inclúyelos aquí como en index.html -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="materialize/css/materialize.min.css">
 </head>
 <body style="background: linear-gradient(to bottom, #1a237e, #64b5f6); min-height: 100vh;">
+    <!-- Barra de navegación global -->
     <my-navbar></my-navbar>
+    <!-- Perfil de usuario -->
     <user-profile></user-profile>
+    <!-- Footer global -->
     <my-footer></my-footer>
+    <!-- Scripts necesarios -->
+    <script type="module" src="components/navbar.js"></script>
     <script type="module" src="components/user-profile.js"></script>
+    <script type="module" src="components/footer.js"></script>
+    <!-- Si usas Materialize u otros scripts globales -->
+    <script src="materialize/js/materialize.min.js"></script>
 </body>
 </html>

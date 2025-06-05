@@ -2,8 +2,6 @@ class UserProfile extends HTMLElement {
     constructor() {
         super();
         this.innerHTML = `
-            <!-- Barra de navegación principal -->
-            <!-- Barra eliminada completamente para que no se muestren los enlaces ni el título -->
             <div class="profile-card center-align" style="max-width: 500px; margin: 40px auto;">
                 <img id="profile-photo" class="profile-photo" src="" alt="Foto de perfil" style="margin-top: 25px;">
                 <h5 id="profile-username" class="profile-username"></h5>
