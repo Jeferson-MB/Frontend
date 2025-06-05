@@ -2,7 +2,7 @@ class Navbar extends HTMLElement {
     constructor() {
         super();
 
-        this.innerHTML = /*html*/`
+        this.innerHTML = `
         <nav style="background: linear-gradient(to bottom, #1a237e, #64b5f6)">
             <div class="nav-wrapper container">
                 <a href="index.html" class="navbar-title-gradient brand-logo">MyPinterest</a>
