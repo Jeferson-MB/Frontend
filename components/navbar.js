@@ -17,7 +17,13 @@ class Navbar extends HTMLElement {
             </div>
         </nav>
         `;
+
+        // El único handler de logout
+        this.querySelector('#btn-logout')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem("user_id");
+            window.location.href = 'login.html';
+        });
     }
 }
-
 customElements.define('my-navbar', Navbar);

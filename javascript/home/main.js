@@ -46,4 +46,4 @@ document.addEventListener("DOMContentLoaded", () => {
     initUploader();
     loadData(false);
     updateNavbarActive('li-general');
-});
+})
