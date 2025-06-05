@@ -7,20 +7,17 @@ document.addEventListener("DOMContentLoaded", () => {
     let viewMyGallery = false;
 
     const userId = parseInt(localStorage.getItem('user_id'));
-    if (!userId)
-        return window.location.href = './login.html';
+    if (!userId) {
+        window.location.href = './login.html';
+        return;
+    }
 
     function loadData(onlyMine = false) {
         fetchUsers()
         .then(users => {
-            console.log(users);
-            
-            // Obtenemos el elemento html que vamos a rellenar
             const greeting = document.getElementById("user-greeting");
-            // De todos los usuarios encontramos al que sea el propio
             const user = users.find(u => u.id === userId);
 
-            // Si el usuario es el que se logeó entonces que nos de nuestro nombre 
             if (onlyMine && user && greeting) {
                 greeting.textContent = `Fotos de ${user.username}`;
             } else if (greeting) {
@@ -30,14 +27,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    // Para ver la galería de los demás
-    document.getElementById("btn-general").addEventListener("click", () => {
+    document.getElementById("btn-general").addEventListener("click", (e) => {
+        e.preventDefault();
         viewMyGallery = false;
         loadData(viewMyGallery);
         updateNavbarActive('li-general');
     });
 
-    document.getElementById("btn-misfotos").addEventListener("click", () => {
+    document.getElementById("btn-misfotos").addEventListener("click", (e) => {
+        e.preventDefault();
         viewMyGallery = true;
         loadData(viewMyGallery);
         updateNavbarActive('li-misfotos');
@@ -46,4 +44,4 @@ document.addEventListener("DOMContentLoaded", () => {
     initUploader();
     loadData(false);
     updateNavbarActive('li-general');
-})
+});

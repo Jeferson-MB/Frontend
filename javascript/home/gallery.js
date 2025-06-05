@@ -8,29 +8,20 @@ export async function loadGallery(users, onlyMine = false) {
     loader.style.display = 'block';
     container.innerHTML = '';
 
-    // Manda a traer las imágenes
     const images = await fetchImages();
     images.forEach(img => {
-        // Pregunta si el usuario que subió la foto es el mismo que está logueado
         const isMine = parseInt(img.user_id) === userId;
 
-        // Es para saber si la persona logueada es la misma de las fotos o no
+        // Solo filtrar si está en "mi galería"
         if (onlyMine && !isMine) return;
-        if (!onlyMine && isMine) return;
 
-        // Encontramos a la persona que cargó la imagen
+        // En galería general, mostrar todas (incluidas las mías)
         const uploader = users.find(u => u.id == img.user_id);
-        const uploaderName = uploader ? (uploader.id === userId ? 'Tú' : uploader.username) 
-        : 'Desconocido';
+        const uploaderName = uploader ? (uploader.id === userId ? 'Tú' : uploader.username) : 'Desconocido';
 
         const commentsHtml = img.comments.map(c => {
-            // Encontramos a la persona que comentó en la base de datos
             const commenter = users.find(u => u.id === c.user_id);
-
-            // Pregunta si el comentario es de la persona loggueada o no
-            const commenterName = commenter ? (commenter.id === userId ? 'Tú' : commenter.username) 
-            :'Anonimo';
-
+            const commenterName = commenter ? (commenter.id === userId ? 'Tú' : commenter.username) : 'Anónimo';
             return `<p><strong>${commenterName}</strong>: ${c.text}</p>`;
         }).join('');
 
@@ -43,17 +34,15 @@ export async function loadGallery(users, onlyMine = false) {
                 </div>
                 <div class='card-content'>
                     <div class='like-section'>
-                        <a class='btn-floating halfway-fab waves-effect waves-light blue 
-                            like-btn data-imageid='${img.id}'>
+                        <a class='btn-floating halfway-fab waves-effect waves-light blue like-btn' data-imageid='${img.id}'>
                             <i class='material-icons'>favorite_border</i>
                         </a>
-                    <span class='card-title'>Subido por: <a class="profile-link" href="profile.html?user_id=${uploader.id}"><strong>${uploaderName}</strong></a></span>
+                    </div>
+                    <span class='card-title'>Subido por: <a class="profile-link" href="profile.html?user_id=${uploader ? uploader.id : ''}"><strong>${uploaderName}</strong></a></span>
                     ${commentsHtml || '<p>Sin comentarios aun</p>'}
-                    
                     <div class='comment-section row'>
                         <div class="input-field" style="display: flex; align-items: center; border: 1px solid #ccc; border-radius: 30px; padding: 0 10px;">
-                        <input id="comment-${img.id}" type="text" placeholder="Envía un mensaje" style="border: none; box-shadow: none; margin: 0; flex: 1;">    
-
+                        <input id="comment-${img.id}" type="text" placeholder="Envía un mensaje" style="border: none; box-shadow: none; margin: 0; flex: 1;">
                         <a data-imageid="${img.id}" class="btn-flat waves-effect waves-grey" style="min-width: auto; padding: 0;">
                             <i class="material-icons">send</i>
                         </a>
@@ -65,6 +54,8 @@ export async function loadGallery(users, onlyMine = false) {
         container.appendChild(card);
     });
 
-    M.Materialbox.init(document.querySelectorAll('.materialboxed'));
+    if (window.M && window.M.Materialbox) {
+        M.Materialbox.init(document.querySelectorAll('.materialboxed'));
+    }
     loader.style.display = 'none';
 }
