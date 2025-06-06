@@ -1,118 +1,59 @@
-import { fetchImages } from "./services/api.js";
-
 export async function loadGallery(users, onlyMine = false) {
-    const userId = parseInt(localStorage.getItem("user_id"));
+    const myUserId = Number(localStorage.getItem("user_id"));
     const container = document.getElementById("gallery");
-    const loader = document.getElementById("loader");
 
-    if (loader) loader.style.display = 'block';
     container.innerHTML = '';
 
-    let images = await fetchImages();
+    const res = await fetch('http://localhost:5000/api/images');
+    const images = await res.json();
 
-    // Elimina duplicados
-    const seen = new Set();
-    images = images.filter(img => {
-        if (seen.has(img.id)) return false;
-        seen.add(img.id);
-        return true;
-    });
+    images.forEach(img => {
+        const isMine = Number(img.user_id) === myUserId;
 
-    // Filtro correcto según vista activa
-    let imagesToShow = onlyMine
-        ? images.filter(img => parseInt(img.user_id) === userId)
-        : images.filter(img => parseInt(img.user_id) !== userId);
+        if (onlyMine && !isMine) return;
+        if (!onlyMine && isMine) return;
 
-    let likedImages = JSON.parse(localStorage.getItem('liked_images') || '[]');
+        const uploader = users.find(u => Number(u.id) === Number(img.user_id));
+        let uploaderHTML = '';
+        if (uploader) {
+            if (Number(uploader.id) === myUserId) {
+                uploaderHTML = '<span style="color:#039be5;font-weight:600;">' + uploader.username + '</span>';
+            } else {
+                uploaderHTML = `<a class="profile-link" style="color:#039be5;font-weight:600;" href="profile.html?user_id=${uploader.id}">${uploader.username}</a>`;
+            }
+        } else {
+            uploaderHTML = '<strong>Desconocido</strong>';
+        }
 
-    // Mensaje si no hay imágenes
-    if (imagesToShow.length === 0) {
-        container.innerHTML = `<div class='center-align' style='margin:24px;color:#222;'>${
-            onlyMine ? "No tienes fotos subidas." : "No hay imágenes en la galería general."
-        }</div>`;
-        if (loader) loader.style.display = 'none';
-        return;
-    }
+        // Recupera comentario si existe:
+        let comentarioHTML = '';
+        if (img.comentario && img.comentario !== '') {
+            comentarioHTML = `<span style="font-weight:500;color:#222;">${uploader ? uploader.username : 'Usuario'}:</span> ${img.comentario}`;
+        } else {
+            comentarioHTML = `<span style="color:#888;">Sin comentarios aun</span>`;
+        }
 
-    imagesToShow.forEach(img => {
-        const uploader = users.find(u => u.id == img.user_id);
-        const uploaderName = uploader ? (parseInt(uploader.id) === userId ? 'Tú' : uploader.username) : 'Desconocido';
-
-        const commentsHtml = (img.comments || []).map(c => {
-            const commenter = users.find(u => u.id === c.user_id);
-            const commenterName = commenter ? (parseInt(commenter.id) === userId ? 'Tú' : commenter.username) : 'Anónimo';
-            return `<p><strong>${commenterName}</strong>: ${c.text}</p>`;
-        }).join('');
-
-        const isLiked = likedImages.includes(img.id);
-
+        // Card con mensaje y botón como antes
         const card = document.createElement('div');
         card.className = 'col s12 m6 l4';
         card.innerHTML = `
-            <div class='card hoverable z-depth-3'>
+            <div class='card hoverable z-depth-3' style="margin-bottom:32px;">
                 <div class='card-image'>
-                    <img class='materialboxed' src='data:image/jpg;base64,${img.filedata}' />
-                    <a class='btn-floating halfway-fab waves-effect waves-light blue like-btn' data-imageid='${img.id}'>
-                        <i class='material-icons ${isLiked ? "Liked" : ""}'>${isLiked ? "favorite" : "favorite_border"}</i>
-                    </a>
+                    <img class='materialboxed' src='http://localhost:5000/static/uploads/${img.filename}' style="margin:auto;max-height:320px;object-fit:contain;" />
                 </div>
                 <div class='card-content'>
-                    <span class='card-title'>Subido por: <a class="profile-link" href="profile.html?user_id=${uploader ? uploader.id : ''}"><strong>${uploaderName}</strong></a></span>
-                    ${commentsHtml || '<p>Sin comentarios aun</p>'}
-                    <div class='comment-section row'>
-                        <div class="input-field" style="display: flex; align-items: center; border: 1px solid #ccc; border-radius: 30px; padding: 0 10px;">
-                        <input id="comment-${img.id}" type="text" placeholder="Envía un mensaje" style="border: none; box-shadow: none; margin: 0; flex: 1;">
-                        <a data-imageid="${img.id}" class="btn-flat waves-effect waves-grey" style="min-width: auto; padding: 0;">
-                            <i class="material-icons">send</i>
-                        </a>
-                        </div>
+                    <span class='card-title' style="font-size:1.1rem;font-weight:700;">Subido por: ${uploaderHTML}</span>
+                    <div style="margin:8px 0 16px 0;">${comentarioHTML}</div>
+                    <div class="input-field" style="margin:0;">
+                        <input type="text" placeholder="Envía un mensaje" style="border-radius:25px;padding-left:16px;padding-right:40px;" />
+                        <button class="btn-flat" style="position:absolute;right:8px;top:4px;min-width:32px;"><i class="material-icons">arrow_forward</i></button>
                     </div>
                 </div>
             </div>
         `;
         container.appendChild(card);
     });
-
-    if (window.M && window.M.Materialbox) {
+    if (window.M && M.Materialbox) {
         M.Materialbox.init(document.querySelectorAll('.materialboxed'));
     }
-    if (loader) loader.style.display = 'none';
-
-    // Likes persistente (localStorage)
-    container.querySelectorAll('.like-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const icon = btn.querySelector('i');
-            const imageId = Number(btn.getAttribute('data-imageid'));
-            let likedImages = JSON.parse(localStorage.getItem('liked_images') || '[]');
-            if (likedImages.includes(imageId)) {
-                likedImages = likedImages.filter(id => id !== imageId);
-                icon.textContent = 'favorite_border';
-                icon.classList.remove('Liked');
-            } else {
-                likedImages.push(imageId);
-                icon.textContent = 'favorite';
-                icon.classList.add('Liked');
-            }
-            localStorage.setItem('liked_images', JSON.stringify(likedImages));
-        });
-    });
-
-    // Enviar comentario
-    container.querySelectorAll('.comment-section a').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const imageId = btn.getAttribute('data-imageid');
-            const input = document.getElementById(`comment-${imageId}`);
-            const text = input.value.trim();
-            if (!text) return;
-            await fetch(`http://localhost:5000/api/comment/${imageId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: userId, comment: text })
-            });
-            input.value = '';
-            // Recarga galería tras comentar
-            const users = await fetch('/api/users').then(res => res.json());
-            loadGallery(users, onlyMine);
-        });
-    });
 }

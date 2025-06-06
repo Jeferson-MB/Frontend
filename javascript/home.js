@@ -125,6 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateNavbarActive('li-misfotos');
     });
 
+    // ¡CLAVE! Muestra la galería general al cargar la página
     loadData(false);
     updateNavbarActive('li-general');
 });

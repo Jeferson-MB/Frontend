@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // SIEMPRE mostrar primero la galería general
     let onlyMine = false;
 
     async function renderGallery() {
@@ -41,7 +40,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     initUploader();
 
-    // ¡CLAVE! Asegura galería general como vista inicial
     onlyMine = false;
     updateNavbarActive('li-general');
     await renderGallery();
