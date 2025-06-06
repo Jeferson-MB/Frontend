@@ -231,3 +231,13 @@ body {
     height: 90px;
   }
 }
+.heart.liked {
+  fill: #2196F3 !important;
+  stroke: #2196F3 !important;
+  transition: fill 0.2s;
+}
+.heart {
+  fill: none;
+  cursor: pointer;
+  transition: fill 0.2s;
+}
