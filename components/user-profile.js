@@ -15,7 +15,7 @@ class UserProfile extends HTMLElement {
         // Cargar datos de usuario
         let user = null;
         try {
-            const res = await fetch(`http://127.0.0.1:5000/api/profile/${userId}`);
+            const res = await fetch(`https://backend-ilaq.onrender.com/api/profile/${userId}`);
             if (res.ok) {
                 user = await res.json();
             }
@@ -24,7 +24,7 @@ class UserProfile extends HTMLElement {
         // Cargar galería de usuario
         let images = [];
         try {
-            const res = await fetch("http://127.0.0.1:5000/api/images");
+            const res = await fetch("https://backend-ilaq.onrender.com/api/images");
             if (res.ok) {
                 images = await res.json();
             }

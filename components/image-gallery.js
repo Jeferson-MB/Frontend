@@ -19,19 +19,19 @@ class ImageGallery extends HTMLElement {
         let comments = [];
         let userId = Number(localStorage.getItem("user_id"));
         try {
-            users = await fetch('http://127.0.0.1:5000/api/users').then(r => r.json());
+            users = await fetch('https://backend-ilaq.onrender.com/api/users').then(r => r.json());
         } catch {
             users = [];
         }
         try {
-            images = await fetch('http://localhost:5000/api/images').then(r => r.json());
+            images = await fetch('https://backend-ilaq.onrender.com/api/images').then(r => r.json());
             if (!Array.isArray(images)) images = [];
         } catch {
             container.innerHTML = "<div class='center-align red-text'>No se pudo cargar la galería.</div>";
             return;
         }
         try {
-            comments = await fetch('http://localhost:5000/api/comments').then(r => r.json());
+            comments = await fetch('https://backend-ilaq.onrender.com/api/comments').then(r => r.json());
             if (!Array.isArray(comments)) comments = [];
         } catch {
             comments = [];
@@ -89,7 +89,7 @@ class ImageGallery extends HTMLElement {
             container.appendChild(card);
 
             // Cargar likes al renderizar la card
-            fetch(`http://localhost:5000/api/images/${img.id}/likes`)
+            fetch(`https://backend-ilaq.onrender.com/api/images/${img.id}/likes`)
                 .then(r => r.json())
                 .then(data => {
                     const likeCountEl = document.getElementById(`like-count-${img.id}`);
@@ -111,7 +111,7 @@ class ImageGallery extends HTMLElement {
 
                 const userId = Number(localStorage.getItem("user_id"));
                 try {
-                    const res = await fetch(`http://localhost:5000/api/images/${imageId}/comments`, {
+                    const res = await fetch(`https://backend-ilaq.onrender.com/api/images/${imageId}/comments`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -164,7 +164,7 @@ class ImageGallery extends HTMLElement {
                 const userId = Number(localStorage.getItem("user_id"));
 
                 // Enviar like al backend con user_id
-                const res = await fetch(`http://localhost:5000/api/images/${imageId}/likes`, {
+                const res = await fetch(`https://backend-ilaq.onrender.com/api/images/${imageId}/likes`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user_id: userId }),

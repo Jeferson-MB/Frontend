@@ -9,7 +9,7 @@ export function renderGallery(container, users) {
             card.innerHTML = `
                 <div class='card hoverable z-depth-3' style="margin-bottom:32px;">
                     <div class='card-image'>
-                        <img class='materialboxed' src='http://localhost:5000/static/uploads/${img.filename}' style="margin:auto;max-height:320px;object-fit:contain;" />
+                        <img class='materialboxed' src='https://backend-ilaq.onrender.com/static/uploads/${img.filename}' style="margin:auto;max-height:320px;object-fit:contain;" />
                     </div>
                     <div class='card-content'>
                         <span class='card-title' style="font-size:1.1rem;font-weight:700;">
@@ -132,7 +132,7 @@ function setupProfileLinkModal() {
         link.onclick = function(e) {
             e.preventDefault();
             const userId = this.getAttribute('data-userid');
-            fetch(`http://127.0.0.1:5000/api/profile/${userId}`)
+            fetch(`https://backend-ilaq.onrender.com/api/profile/${userId}`)
                 .then(res => res.ok ? res.json() : null)
                 .then(user => {
                     if (!user) {

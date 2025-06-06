@@ -29,7 +29,7 @@ export function initUploader() {
             reader.onload = async (event) => {
                 const base64Image = event.target.result.split(',')[1];
                 try {
-                    const res = await fetch('http://localhost:5000/api/images', {
+                    const res = await fetch('https://backend-ilaq.onrender.com/api/images', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

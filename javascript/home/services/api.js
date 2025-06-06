@@ -1,4 +1,4 @@
-const URL = "http://localhost:5000/api";
+const URL = "https://backend-ilaq.onrender.com/api";
 
 export async function fetchUsers() {
     const res = await fetch(`${URL}/users`);

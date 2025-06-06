@@ -69,7 +69,7 @@ class ImageGallery extends HTMLElement {
         const users = await fetch('http://127.0.0.1:5000/api/users').then(r => r.json());
 
         // Cargar imágenes (con base64)
-        const images = await fetch('http://localhost:5000/api/images').then(r => r.json());
+        const images = await fetch('https://backend-ilaq.onrender.com/api/images').then(r => r.json());
 
         this.renderGallery(users, images, myUserId);
     }
