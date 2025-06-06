@@ -31,6 +31,12 @@ class ImageUploader extends HTMLElement {
                 const user_id = localStorage.getItem('user_id');
                 const filename = file.name;
 
+                // Validar todos los datos antes de enviar
+                if (!base64 || !filename || !user_id) {
+                    alert('Faltan datos para subir la imagen');
+                    return;
+                }
+
                 // Enviar la imagen al backend
                 try {
                     const res = await fetch('https://backend-ilaq.onrender.com/api/images', {
@@ -43,7 +49,6 @@ class ImageUploader extends HTMLElement {
                         })
                     });
                     if (res.ok) {
-                        // Recarga para mostrar la nueva imagen
                         window.location.reload();
                     } else {
                         alert('Error al subir la imagen');
@@ -56,4 +61,6 @@ class ImageUploader extends HTMLElement {
         });
     }
 }
-customElements.define('image-uploader', ImageUploader);
+if (!customElements.get('image-uploader')) {
+    customElements.define('image-uploader', ImageUploader);
+}
