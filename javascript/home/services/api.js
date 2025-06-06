@@ -1,9 +1,5 @@
-import { URI } from "../../uri.js";
+const URL = "http://localhost:5000/api";
 
-const URL =  URI + '/api';
-
-// Export: Hace que pueda llamarse desde otros archivos de javascript
-// Async: Hace a la función asincrona
 export async function fetchUsers() {
     const res = await fetch(`${URL}/users`);
     return res.json();
@@ -16,7 +12,6 @@ export async function fetchImages() {
 
 export async function uploadImage(file, userId) {
     const formData = new FormData();
-    // Empaquetando nuestra información en el FormData
     formData.append('image', file);
     formData.append('user_id', userId);
 
@@ -28,7 +23,7 @@ export async function uploadImage(file, userId) {
     return res.json();
 }
 
-export async function fetchComments(imageId, userId, text) {
+export async function postComment(imageId, userId, text) {
     const res = await fetch(`${URL}/comment/${imageId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -37,6 +32,5 @@ export async function fetchComments(imageId, userId, text) {
             comment: text
         })
     });
-
     return res.json();
 }
