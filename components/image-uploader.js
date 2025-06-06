@@ -1,7 +1,7 @@
 class ImageUploader extends HTMLElement {
     constructor() {
         super();
-        this.innerHTML = /*html*/`
+        this.innerHTML = `
         <div class="fixed-action-btn" style="z-index: 999;">
             <a id="fab-upload" class="btn-floating btn-large blue" title="Subir imagen">
                 <i class="material-icons">add_a_photo</i>
@@ -24,40 +24,48 @@ class ImageUploader extends HTMLElement {
             const file = fileInput.files[0];
             if (!file) return;
 
-            // Convertir a base64
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const base64 = e.target.result.split(',')[1];
-                const user_id = localStorage.getItem('user_id');
-                const filename = file.name;
+            // SUBIR A CLOUDINARY
+            const data = new FormData();
+            data.append('file', file);
+            data.append('upload_preset', 'Jeferson'); // ← Tu upload_preset
+            const cloudinaryUrl = 'https://api.cloudinary.com/v1_1/Jeferson/image/upload'; // ← Tu cloud_name
 
-                // Validar todos los datos antes de enviar
-                if (!base64 || !filename || !user_id) {
-                    alert('Faltan datos para subir la imagen');
-                    return;
-                }
+            let urlCloudinary;
+            try {
+                const res = await fetch(cloudinaryUrl, {
+                    method: 'POST',
+                    body: data
+                });
+                const json = await res.json();
+                urlCloudinary = json.secure_url;
+                if (!urlCloudinary) throw new Error('No se obtuvo URL de Cloudinary');
+            } catch (err) {
+                alert('Error al subir a Cloudinary');
+                return;
+            }
 
-                // Enviar la imagen al backend
-                try {
-                    const res = await fetch('https://backend-ilaq.onrender.com/api/images', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            filedata: base64,
-                            filename,
-                            user_id
-                        })
-                    });
-                    if (res.ok) {
-                        window.location.reload();
-                    } else {
-                        alert('Error al subir la imagen');
-                    }
-                } catch (err) {
-                    alert('No se pudo conectar al servidor');
+            // ENVIAR URL AL BACKEND
+            const user_id = localStorage.getItem('user_id');
+            const filename = file.name;
+
+            try {
+                const res = await fetch('https://backend-ilaq.onrender.com/api/images', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image_url: urlCloudinary,
+                        filename,
+                        user_id
+                    })
+                });
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Error al subir la imagen al backend');
                 }
-            };
-            reader.readAsDataURL(file);
+            } catch (err) {
+                alert('No se pudo conectar al servidor');
+            }
         });
     }
 }
