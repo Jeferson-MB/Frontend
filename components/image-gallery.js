@@ -1,15 +1,16 @@
 class ImageGallery extends HTMLElement {
     connectedCallback() {
+        const onlyMine = this.getAttribute('only-mine') === 'true';
         this.innerHTML = `<div class="row" id="gallery"></div>`;
-        this.loadMyImages();
+        this.loadImages(onlyMine);
     }
 
-    async loadMyImages() {
+    async loadImages(onlyMine = false) {
         const userId = Number(localStorage.getItem("user_id"));
         const container = this.querySelector("#gallery");
 
         if (!userId) {
-            container.innerHTML = "<div class='white-text center-align' style='margin:24px;'>Debes iniciar sesión para ver tus fotos.</div>";
+            container.innerHTML = "<div class='white-text center-align' style='margin:24px;'>Debes iniciar sesión para ver la galería.</div>";
             return;
         }
 
@@ -22,17 +23,21 @@ class ImageGallery extends HTMLElement {
         const images = await imagesRes.json();
         const users = await usersRes.json();
 
-        // Filtra solo tus imágenes
-        const myImages = images.filter(img => Number(img.user_id) === userId);
+        // Filtra imágenes según modo
+        const imagesToShow = onlyMine
+            ? images.filter(img => Number(img.user_id) === userId)
+            : images.filter(img => Number(img.user_id) !== userId);
 
-        if (!myImages.length) {
-            container.innerHTML = "<div class='white-text center-align' style='margin:24px;'>No tienes fotos subidas.</div>";
+        if (!imagesToShow.length) {
+            container.innerHTML = `<div class='white-text center-align' style='margin:24px;'>${onlyMine ? "No tienes fotos subidas." : "No hay imágenes en la galería general."}</div>`;
             return;
         }
 
-        myImages.forEach(img => {
-            // Uploader info (en tu galería siempre eres tú)
-            const uploaderName = "<strong>Tú</strong>";
+        imagesToShow.forEach(img => {
+            const uploader = users.find(u => Number(u.id) === Number(img.user_id));
+            const uploaderName = uploader
+                ? (Number(uploader.id) === userId ? 'Tú' : uploader.username)
+                : "<strong>Desconocido</strong>";
 
             // Comentarios
             let commentsHtml = "";
@@ -60,11 +65,11 @@ class ImageGallery extends HTMLElement {
                     </div>
                     <div class="card-content" style="border-radius: 0 0 20px 20px;">
                         <span class="card-title" style="font-size:1.2rem;">Subido por: ${uploaderName}</span>
-                        ${commentsHtml}
+                        <div class="comments-section">${commentsHtml}</div>
                         <div class="comment-section row" style="margin-top: 10px;">
                             <div class="input-field" style="display: flex; align-items: center; border: 1px solid #ccc; border-radius: 30px; padding: 0 10px;">
-                                <input id="comment-${img.id}" type="text" placeholder="Envía un mensaje" style="border: none; box-shadow: none; margin: 0; flex: 1; background: transparent;">
-                                <a data-imageid="${img.id}" class="btn-flat waves-effect waves-grey" style="min-width: auto; padding: 0;">
+                                <input id="comment-${img.id}" type="text" placeholder="Envía un mensaje" style="border: none; box-shadow: none; margin: 0; flex: 1;">
+                                <a data-imageid="${img.id}" class="btn-flat waves-effect waves-grey send-comment-btn" style="min-width: auto; padding: 0;">
                                     <i class="material-icons">send</i>
                                 </a>
                             </div>
@@ -76,36 +81,47 @@ class ImageGallery extends HTMLElement {
         });
 
         if (window.M && M.Materialbox) {
-            M.Materialbox.init(container.querySelectorAll('.materialboxed'));
+            M.Materialbox.init(this.querySelectorAll('.materialboxed'));
         }
 
-        // Evento para agregar comentario
-        container.querySelectorAll('.comment-section a').forEach(btn => {
-            btn.addEventListener('click', async () => {
+        // EVENT LISTENER PARA ENVIAR COMENTARIOS
+        container.querySelectorAll('.send-comment-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
                 const imageId = btn.getAttribute('data-imageid');
-                const input = document.getElementById(`comment-${imageId}`);
+                const input = container.querySelector(`#comment-${imageId}`);
                 const text = input.value.trim();
                 if (!text) return;
-                await fetch(`http://localhost:5000/api/comment/${imageId}`, {
+
+                const userId = Number(localStorage.getItem("user_id"));
+                // Enviar al backend
+                const res = await fetch(`http://localhost:5000/api/images/${imageId}/comments`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, comment: text })
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        text: text
+                    })
                 });
-                input.value = '';
-                this.loadMyImages(); // Recarga la galería para ver el nuevo comentario
+
+                if (res.ok) {
+                    input.value = "";
+                    // Recargar la galería para mostrar el comentario nuevo
+                    this.loadImages(onlyMine);
+                } else {
+                    alert('Error al enviar comentario.');
+                }
             });
         });
 
-        // Evento visual de like (solo frontend, no persistente)
-        container.querySelectorAll('.like-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const icon = btn.querySelector('i');
-                if (icon.textContent == 'favorite_border') {
-                    icon.textContent = 'favorite';
-                    icon.classList.add('Liked');
-                } else {
-                    icon.textContent = 'favorite_border';
-                    icon.classList.remove('Liked');
+        // Permitir enviar comentario con Enter
+        container.querySelectorAll('input[id^="comment-"]').forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const imageId = input.id.split('-')[1];
+                    container.querySelector(`a.send-comment-btn[data-imageid="${imageId}"]`).click();
                 }
             });
         });
