@@ -1,131 +1,117 @@
-function loadGallery(users, onlyMine = false) {
-    const myUserId = Number(localStorage.getItem("user_id"));
-    const container = document.getElementById("gallery");
+class ImageGallery extends HTMLElement {
+    constructor() {
+        super();
+        this.onlyMine = this.getAttribute('only-mine') === 'true';
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+            <style>
+                .gallery-row {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 24px;
+                    justify-content: center;
+                }
+                .card {
+                    background: white;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+                    width: 290px;
+                    margin-bottom: 16px;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .card-image {
+                    width: 100%;
+                    height: 230px;
+                    background: #eee;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+                }
+                .card-image img {
+                    max-width: 100%;
+                    max-height: 100%;
+                    display: block;
+                    margin: auto;
+                }
+                .card-content {
+                    padding: 10px 18px;
+                    min-height: 40px;
+                }
+                .card-title {
+                    font-size: 1rem;
+                    color: #1a237e;
+                    font-weight: bold;
+                }
+                .uploader-link {
+                    color: #1565c0;
+                    text-decoration: none;
+                }
+            </style>
+            <div class="gallery-row" id="gallery"></div>
+        `;
+    }
 
-    container.innerHTML = '';
+    connectedCallback() {
+        this.loadData();
+    }
 
-    fetch('http://localhost:5000/api/images')
-    .then(res => res.json())
-    .then(images => {
+    async loadData() {
+        const myUserId = Number(localStorage.getItem("user_id"));
+        if (!myUserId) {
+            window.location.href = './login.html';
+            return;
+        }
+
+        // Cargar usuarios
+        const users = await fetch('http://127.0.0.1:5000/api/users').then(r => r.json());
+
+        // Cargar imágenes (con base64)
+        const images = await fetch('http://localhost:5000/api/images').then(r => r.json());
+
+        this.renderGallery(users, images, myUserId);
+    }
+
+    renderGallery(users, images, myUserId) {
+        const container = this.shadowRoot.getElementById('gallery');
+        container.innerHTML = "";
+
         images.forEach(img => {
             const isMine = Number(img.user_id) === myUserId;
+            if (this.onlyMine && !isMine) return;
+            if (!this.onlyMine && isMine) return;
 
-            if (onlyMine && !isMine) return;
-            if (!onlyMine && isMine) return;
-
-            // Encuentra el uploader usando id numérico y muestra info para debug
+            // Encuentra el uploader
             const uploader = users.find(u => Number(u.id) === Number(img.user_id));
-            console.log({
-                img_user_id: img.user_id,
-                uploader_id: uploader ? uploader.id : null,
-                uploader_username: uploader ? uploader.username : null,
-                myUserId: myUserId
-            });
-
             let uploaderHTML = '';
             if (uploader) {
                 if (Number(uploader.id) === myUserId) {
                     uploaderHTML = '<strong>Tú</strong>';
                 } else {
-                    uploaderHTML = `<a class="profile-link" href="profile.html?user_id=${uploader.id}"><strong>${uploader.username}</strong></a>`;
+                    uploaderHTML = `<a class="uploader-link" href="profile.html?user_id=${uploader.id}"><strong>${uploader.username}</strong></a>`;
                 }
             } else {
                 uploaderHTML = '<strong>Desconocido</strong>';
             }
 
+            // Usa la imagen en base64
+            const imgSrc = `data:image/jpeg;base64,${img.filedata}`;
+
             const card = document.createElement('div');
-            card.className = 'col s12 m6 l4';
+            card.className = 'card';
             card.innerHTML = `
-                <div class='card hoverable z-depth-3'>
-                    <div class='card-image'>
-                        <img class='materialboxed' src='http://localhost:5000/static/uploads/${img.filename}' />
-                    </div>
-                    <div class='card-content'>
-                        <span class='card-title'>Subido por: ${uploaderHTML}</span>
-                    </div>
+                <div class='card-image'>
+                    <img src='${imgSrc}' alt='Imagen subida' />
+                </div>
+                <div class='card-content'>
+                    <span class='card-title'>Subido por: ${uploaderHTML}</span>
                 </div>
             `;
             container.appendChild(card);
         });
-        if (window.M && M.Materialbox) {
-            M.Materialbox.init(document.querySelectorAll('.materialboxed'));
-        }
-    });
-}
-
-function loadData(onlyMine = false) {
-    const myUserId = Number(localStorage.getItem("user_id"));
-    if (!myUserId) window.location.href = './login.html';
-    
-    fetch('http://127.0.0.1:5000/api/users')
-    .then(res => res.json())
-    .then(users => {
-        const greeting = document.getElementById("user-greeting");
-
-        if (onlyMine) {
-            const user = users.find(u => Number(u.id) === myUserId);
-            if (user && greeting) {
-                greeting.textContent = `Fotos de ${user.username}`;
-            }
-        } else {
-            if (greeting) {
-                greeting.textContent = `Galería General`;
-            }
-        }
-        loadGallery(users, onlyMine);
-    });
-}
-
-function updateNavbarActive(id) {
-    const listItems = document.querySelectorAll(".nav-wrapper .right li");
-    listItems.forEach(li => li.classList.remove('active'));
-    const selectedLi = document.getElementById(id);
-    if(selectedLi) {
-        selectedLi.classList.add('active');
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const imageInput = document.getElementById("imageInput");
-    const fabUpload = document.getElementById("fab-upload");
-    let viewMyGallery = true;
-
-    fabUpload.addEventListener("click", () => {
-        imageInput.click();
-    });
-
-    imageInput.addEventListener("change", () => {
-        const file = imageInput.files[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        const userId = localStorage.getItem('user_id');
-        formData.append('image', file);
-        formData.append('user_id', userId);
-
-        fetch('http://localhost:5000/api/images', {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            loadData(viewMyGallery);
-        });
-    });
-
-    document.getElementById("btn-general").addEventListener("click", () => {
-        viewMyGallery = false;
-        loadData(viewMyGallery);
-        updateNavbarActive('li-general');
-    });
-
-    document.getElementById("btn-misfotos").addEventListener("click", () => {
-        viewMyGallery = true;
-        loadData(viewMyGallery);
-        updateNavbarActive('li-misfotos');
-    });
-
-    // ¡CLAVE! Muestra la galería general al cargar la página
-    loadData(false);
-    updateNavbarActive('li-general');
-});
+customElements.define('image-gallery', ImageGallery);

@@ -12,7 +12,11 @@ export function renderGallery(container, users) {
                         <img class='materialboxed' src='http://localhost:5000/static/uploads/${img.filename}' style="margin:auto;max-height:320px;object-fit:contain;" />
                     </div>
                     <div class='card-content'>
-                        <span class='card-title' style="font-size:1.1rem;font-weight:700;">Subido por: ${getUploaderName(img.user_id, users)}</span>
+                        <span class='card-title' style="font-size:1.1rem;font-weight:700;">
+                          Subido por: <span class="profile-link" data-userid="${img.user_id}" style="color:#1565c0;cursor:pointer;text-decoration:underline;font-weight:bold;">
+                            ${getUploaderName(img.user_id, users)}
+                          </span>
+                        </span>
                         <div style="margin:8px 0 16px 0;">
                             ${renderComments(img.comments, users)}
                         </div>
@@ -31,6 +35,7 @@ export function renderGallery(container, users) {
             M.Materialbox.init(document.querySelectorAll('.materialboxed'));
         }
         enableCommentSending(container);
+        setupProfileLinkModal();
     });
 }
 
@@ -76,10 +81,73 @@ export function enableCommentSending(container) {
                 if (!text) return;
                 postComment(imageId, userId, text).then(() => {
                     input.value = "";
-                    // Recargar comentarios
-                    // Puedes llamar a renderGallery(container, users) si lo necesitas
+                    // Recargar comentarios si es necesario
                 });
             }
         });
+    });
+}
+
+// Modal único para perfil de usuario
+function setupProfileLinkModal() {
+    if (!document.getElementById('profile-modal')) {
+        const modal = document.createElement('div');
+        modal.id = 'profile-modal';
+        modal.style.display = 'none';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100vw';
+        modal.style.height = '100vh';
+        modal.style.background = 'rgba(0,0,0,0.6)';
+        modal.style.zIndex = '9999';
+        modal.innerHTML = `
+            <div id="profile-modal-content" style="
+                background:#233c6a;
+                color:#fff;
+                border-radius:18px;
+                max-width:360px;
+                margin:60px auto 0 auto;
+                box-shadow:0 4px 20px #0009;
+                padding:34px 28px 32px 28px;
+                text-align:center;
+                position:relative;
+            ">
+                <span id="close-profile-modal" style="
+                    position:absolute;right:18px;top:16px;
+                    color:#bbb;font-size:2rem;cursor:pointer;font-weight:bold;">&times;</span>
+                <img id="modal-profile-pic" src="default-profile.png" style="width:100px;height:100px;object-fit:cover;border-radius:50%;border:3px solid #1565c0;background:#fff;margin-bottom:20px;">
+                <div id="modal-username" style="font-size:1.8rem;color:#fff;margin-bottom:8px;"></div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        document.getElementById('close-profile-modal').onclick = function() {
+            document.getElementById('profile-modal').style.display = 'none';
+        };
+    }
+
+    // Delegación para todos los .profile-link
+    document.querySelectorAll('.profile-link').forEach(link => {
+        link.onclick = function(e) {
+            e.preventDefault();
+            const userId = this.getAttribute('data-userid');
+            fetch(`http://127.0.0.1:5000/api/profile/${userId}`)
+                .then(res => res.ok ? res.json() : null)
+                .then(user => {
+                    if (!user) {
+                        document.getElementById('modal-username').textContent = "Usuario no encontrado";
+                        document.getElementById('modal-profile-pic').src = "default-profile.png";
+                    } else {
+                        document.getElementById('modal-username').textContent = user.username || "Sin nombre";
+                        if (user.photo && user.photo.length > 30) {
+                            document.getElementById('modal-profile-pic').src = `data:image/png;base64,${user.photo}`;
+                        } else {
+                            document.getElementById('modal-profile-pic').src = "default-profile.png";
+                        }
+                    }
+                    document.getElementById('profile-modal').style.display = 'block';
+                });
+        };
     });
 }

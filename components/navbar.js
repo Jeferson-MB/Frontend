@@ -9,7 +9,7 @@ class Navbar extends HTMLElement {
                 <ul class="right">
                     <li id="li-general"><a href="index.html" id="btn-general" style="color: #fff;">Galería general</a></li>
                     <li id="li-misfotos"><a href="mygallery.html" id="btn-misfotos" style="color: #fff;">Mi galería</a></li>
-                    <li><a href="profile.html">Mi Perfil</a></li>
+                    <li><a href="profile.html" id="btn-miperfil">Mi Perfil</a></li>
                     <li id="li-logout">
                         <a class="azul grisáceo oscuro-3-text" id="btn-logout" href="#">Cerrar Sesión</a>
                     </li>
@@ -18,11 +18,25 @@ class Navbar extends HTMLElement {
         </nav>
         `;
 
-        // El único handler de logout
         this.querySelector('#btn-logout')?.addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem("user_id");
             window.location.href = 'login.html';
+        });
+
+        // --- Agrega aquí el handler para Mi Perfil ---
+        this.querySelector('#btn-miperfil')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            const userId = localStorage.getItem('user_id');
+            if (!userId) {
+                if (typeof M !== 'undefined' && M.toast) {
+                    M.toast({html: "Debes iniciar sesión para ver tu perfil", classes: 'red'});
+                } else {
+                    alert("Debes iniciar sesión para ver tu perfil");
+                }
+                return;
+            }
+            window.location.href = `profile.html?user_id=${userId}`;
         });
     }
 }

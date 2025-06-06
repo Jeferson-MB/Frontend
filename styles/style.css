@@ -241,3 +241,27 @@ body {
   cursor: pointer;
   transition: fill 0.2s;
 }
+.like-btn.liked i {
+  color: red;
+}
+.like-btn i {
+  transition: color 0.2s;
+}
+.like-count {
+  font-weight: bold;
+  margin-left: 4px;
+  color: #1565c0;
+}
+.heart.liked-animate {
+  color: #ff4b6e !important;
+  animation: heartbeat 0.5s;
+  filter: drop-shadow(0 0 8px #ffb4c6);
+}
+@keyframes heartbeat {
+  0% { transform: scale(1);}
+  20% { transform: scale(1.2);}
+  40% { transform: scale(0.95);}
+  60% { transform: scale(1.15);}
+  80% { transform: scale(1);}
+  100% { transform: scale(1);}
+}

@@ -1,26 +1,25 @@
 import { URI } from "../uri.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-    let btnLogin = document.getElementById("btnLogin");
+    const btnLogin = document.getElementById("btnLogin");
+    const loader = document.getElementById("login-loader");
 
-    btnLogin.addEventListener("click", async () => {
-        let varUsername = document.getElementById("username").value;
-        let varPassword = document.getElementById("password").value;
-        const loader = document.getElementById("login-loader");
-        
-        // Validación básica
-        if (!varUsername.trim() || !varPassword.trim()) {
+    btnLogin.addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        const varUsername = document.getElementById("username").value.trim();
+        const varPassword = document.getElementById("password").value.trim();
+
+        if (!varUsername || !varPassword) {
             M.toast({
                 html: "Por favor, completa todos los campos",
                 classes: 'red'
             });
             return;
         }
-        
+
         loader.style.display = 'block';
-        
-        console.log(`Intentando conectar a: ${URI}/api/login`);
-        
+
         try {
             const response = await fetch(`${URI}/api/login`, {
                 method: 'POST',
@@ -33,45 +32,39 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             });
 
-            let data;
-            try {
-                data = await response.json();
-            } catch (jsonError) {
-                data = {};
-            }
-
             loader.style.display = 'none';
 
-            if (response.ok) {
-                if (data.user_id) {
-                    localStorage.setItem('user_id', data.user_id);
-                    M.toast({
-                        html: data.mensaje,
-                        classes: 'green'
-                    });
-                    location.href = 'index.html';
-                } else {
-                    M.toast({
-                        html: data.error || 'Error desconocido',
-                        classes: 'red'
-                    });
-                }
-            } else {
-                // Mostrar mensaje de error personalizado si viene del backend
+            let data = {};
+            try {
+                data = await response.json();
+            } catch (err) {
+                // Si la respuesta no es JSON, muestra error genérico
                 M.toast({
-                    html: data.error || `Error del servidor: ${response.status}`,
+                    html: "Respuesta inesperada del servidor.",
+                    classes: 'red'
+                });
+                return;
+            }
+
+            if (response.ok && data.success && data.user_id) {
+                localStorage.setItem('user_id', data.user_id);
+                M.toast({
+                    html: "¡Inicio de sesión exitoso!",
+                    classes: 'green'
+                });
+                setTimeout(() => {
+                    location.href = 'index.html';
+                }, 1000);
+            } else {
+                M.toast({
+                    html: data.error || "Usuario o contraseña incorrectos.",
                     classes: 'red'
                 });
             }
         } catch (error) {
             loader.style.display = 'none';
-            console.error('Error details:', error);
-            let errorMessage = 'Error de conexión';
-            if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                errorMessage = 'No se puede conectar al servidor. Verifica que el backend esté ejecutándose.';
-            }
             M.toast({
-                html: errorMessage,
+                html: "No se puede conectar al servidor, intenta más tarde.",
                 classes: 'red'
             });
         }
