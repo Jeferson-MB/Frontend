@@ -66,7 +66,7 @@ class ImageGallery extends HTMLElement {
             card.innerHTML = `
                 <div class="card hoverable z-depth-3" style="border-radius: 20px; overflow: hidden;">
                     <div class="card-image" style="border-radius: 20px 20px 0 0; overflow: hidden; position:relative;">
-                        <img class="materialboxed" src="${img.image_url}" alt="${img.filename}" style="border-radius: 20px 20px 0 0; width:100%; height:250px; object-fit:cover;">
+                        <img class="materialboxed" src="data:image/jpg;base64,${img.filedata}" alt="${img.filename}" style="border-radius: 20px 20px 0 0; width:100%; height:250px; object-fit:cover;">
                         <a class='btn-floating halfway-fab waves-effect waves-light blue like-btn' data-imageid='${img.id}' style="position:absolute;right:20px;bottom:20px;">
                             <i class='material-icons heart' id='heart-${img.id}'>favorite_border</i>
                             <span class="like-count" id="like-count-${img.id}" style="color:white; margin-left:10px; font-weight:bold; font-size:1rem;"></span>
